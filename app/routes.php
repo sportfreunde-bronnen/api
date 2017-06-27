@@ -5,3 +5,4 @@ $app->get('/', function ($request, $response, $args) {
 });
 
 $app->get('/product', 'App\Action\ProductAction:fetch');
+$app->get('/product/{slug}', 'App\Action\ProductAction:fetchOne');

@@ -15,6 +15,15 @@ $container['em'] = function ($c) {
 };
 
 $container['App\Action\ProductAction'] = function ($c) {
-    $productResource = new \App\Resource\ProductResource($c->get('em'));
+    $productResource = new \App\Resource\ProductResource($c->get('em'), $c->get('logger'));
     return new \App\Action\ProductAction($productResource);
+};
+
+// Logger
+$container['logger'] = function ($c) {
+    $settings = $c->get('settings')['logger'];
+    $logger = new Monolog\Logger($settings['name']);
+    $logger->pushProcessor(new Monolog\Processor\UidProcessor());
+    $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+    return $logger;
 };

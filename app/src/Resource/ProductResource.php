@@ -16,6 +16,9 @@ class ProductResource extends AbstractResource
      */
     public function get($id = null)
     {
+
+        $this->getLogger()->info("Slim-Skeleton '/' route " . $id );
+
         if ($id === null) {
             $products = $this->entityManager->getRepository('App\Entity\Product')->findAll();
             $products = array_map(
