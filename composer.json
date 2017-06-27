@@ -1,0 +1,22 @@
+{
+    "name": "sportfreunde-bronnen/api",
+    "description": "SFB API",
+    "type": "project",
+    "require": {
+        "slim/slim": "^3.8",
+        "monolog/monolog": "^1.23",
+        "doctrine/orm": "^2.5",
+        "zendframework/zend-stdlib": "^3.1"
+    },
+    "authors": [
+        {
+            "name": "Magnus Buk",
+            "email": "MagnusBuk@gmx.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/src"
+        }
+    }
+}
