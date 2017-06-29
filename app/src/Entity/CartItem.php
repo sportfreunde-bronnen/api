@@ -29,12 +29,12 @@ class CartItem extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Cart", inversedBy="items")
      * @ORM\JoinColumn(name="cart_id", referencedColumnName="id")
      *
-     * @var Product
+     * @var Cart
      */
     protected $cart;
 
     /**
-     * @ORM\OneToOne(targetEntity="Product")
+     * @ORM\ManyToOne(targetEntity="Product")
      * @ORM\JoinColumn=(name="product_id", referencedColumnName="id")
      *
      * @var Product
@@ -88,9 +88,9 @@ class CartItem extends AbstractEntity
     }
 
     /**
-     * @param Product $cart
+     * @param Cart $cart
      */
-    public function setCart(Product $cart)
+    public function setCart(Cart $cart)
     {
         $this->cart = $cart;
     }
@@ -136,9 +136,9 @@ class CartItem extends AbstractEntity
     }
 
     /**
-     * @param Product $product
+     * @param Product|int $product
      */
-    public function setProduct(Product $product)
+    public function setProduct($product)
     {
         $this->product = $product;
     }
@@ -152,9 +152,9 @@ class CartItem extends AbstractEntity
     }
 
     /**
-     * @param ProductVariant $variant
+     * @param ProductVariant|int $variant
      */
-    public function setVariant(ProductVariant $variant)
+    public function setVariant($variant)
     {
         $this->variant = $variant;
     }

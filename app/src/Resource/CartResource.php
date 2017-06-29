@@ -7,6 +7,7 @@ namespace App\Resource;
 use App\AbstractResource;
 use App\Entity\Cart as CartEntity;
 use App\Entity\Cart;
+use App\Entity\CartItem;
 use App\Service\CartKeyGenerator;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
@@ -55,11 +56,45 @@ class CartResource extends AbstractResource
      */
     public function fetchOne(string $key) : Cart
     {
+        return $this->getCartByKey($key);
+    }
+
+    /**
+     * Adds a product to the given cart
+     *
+     * @param string $cartKey
+     * @param array $data
+     *
+     * @return CartItem
+     */
+    public function addProductToCart(string $cartKey, array $data = []) : CartItem
+    {
+        $em = $this->getEntityManager();
+
+        $cartItem = new CartItem();
+        $cartItem->setCart(
+            $this->getCartByKey($cartKey)
+        );
+        $cartItem->setAmount($data['amount']);
+        $cartItem->setProduct($em->getReference('App\Entity\Product', $data['productId']));
+        $cartItem->setPrice((float)$data['price']);
+
+        if (!empty($data['variant'])) {
+            $cartItem->setVariant($em->getReference('App\Entity\ProductVariant', $data['variant']));
+        }
+
+        $em->persist($cartItem);
+        $em->flush();
+
+        return $cartItem;
+    }
+
+    private function getCartByKey(string $key) : Cart
+    {
         /** @var Cart $cart */
         $cart = $this->getEntityManager()
             ->getRepository('App\Entity\Cart')
             ->findOneBy(['key' => $key]);
-
         return $cart;
     }
 

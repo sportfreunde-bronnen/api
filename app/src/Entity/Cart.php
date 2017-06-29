@@ -39,7 +39,7 @@ class Cart extends AbstractEntity
     protected $status = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="CartItem", mappedBy="cart")
+     * @ORM\OneToMany(targetEntity="CartItem", mappedBy="cart", cascade={"persist"})
      *
      * @var Collection
      */
@@ -94,9 +94,9 @@ class Cart extends AbstractEntity
     }
 
     /**
-     * @return Collection
+     * @return Collection|null
      */
-    public function getItems(): Collection
+    public function getItems()
     {
         return $this->items;
     }
@@ -113,14 +113,15 @@ class Cart extends AbstractEntity
     {
         $cart = parent::getArrayCopy();
 
-        $items = array_map(
-            function(CartItem $obj) {
-                return $obj->getArrayCopy();
-            },
-            $this->getItems()->toArray()
-        );
-
-        $cart['items'] = $items;
+        if ($this->getItems() !== null) {
+            $items = array_map(
+                function(CartItem $obj) {
+                    return $obj->getArrayCopy();
+                },
+                $this->getItems()->toArray()
+            );
+            $cart['items'] = $items;
+        }
 
         return $cart;
     }

@@ -43,7 +43,7 @@ class CartAction
     public function create(Request $request, Response $response, array $args) : response
     {
         $newCart = $this->getCartResource()->create();
-        return $response->withJson(['status' => 0]);
+        return $response->withJson($newCart->getArrayCopy());
     }
 
     public function fetch(Request $request, Response $response, array $args) : Response
@@ -64,7 +64,9 @@ class CartAction
      */
     public function addProduct(Request $request, Response $response, array $args) : response
     {
-        return $response->withJson(['status' => 0]);
+        $data = $request->getParsedBody();
+        $newItem = $this->getCartResource()->addProductToCart($args['key'], $data);
+        return $response->withJson($newItem->getArrayCopy());
     }
 
     /**
