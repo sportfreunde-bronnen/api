@@ -13,6 +13,12 @@ abstract class AbstractEntity
      */
     public function getArrayCopy() : array
     {
-        return get_object_vars($this);
+        $temp = get_object_vars($this);
+        foreach ($temp as $key => $value) {
+            if (substr($key, 0, 2) == '__') {
+                unset($temp[$key]);
+            }
+        }
+        return $temp;
     }
 }

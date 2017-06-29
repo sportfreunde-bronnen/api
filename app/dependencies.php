@@ -1,7 +1,9 @@
 <?php
 
+// Slim DI Container
 $container = $app->getContainer();
 
+// Doctrine2 EntityManager
 $container['em'] = function ($c) {
     $settings = $c->get('settings');
     $config = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
@@ -14,9 +16,22 @@ $container['em'] = function ($c) {
     return \Doctrine\ORM\EntityManager::create($settings['doctrine']['connection'], $config);
 };
 
+// ProductAction
 $container['App\Action\ProductAction'] = function ($c) {
     $productResource = new \App\Resource\ProductResource($c->get('em'), $c->get('logger'));
     return new \App\Action\ProductAction($productResource);
+};
+
+// CartAction
+$container['App\Action\CartAction'] = function($c) {
+    $cartResource = new \App\Resource\CartResource(
+        $c->get('em'),
+        $c->get('logger'),
+        new \App\Service\CartKeyGenerator()
+    );
+    return new \App\Action\CartAction(
+        $cartResource
+    );
 };
 
 // Logger

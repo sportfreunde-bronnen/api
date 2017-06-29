@@ -58,7 +58,6 @@ class Product extends AbstractEntity
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="ProductImage", mappedBy="product")
-     **
      */
     protected $images;
 
@@ -66,7 +65,6 @@ class Product extends AbstractEntity
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="ProductVariant", mappedBy="product")
-     **
      */
     protected $variants;
 
