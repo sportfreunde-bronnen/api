@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Action;
 
 use App\Resource\ProductResource;
-use Doctrine\ORM\EntityManager;
 use Slim\Http\Response;
 use Slim\Http\Request;
 
@@ -26,18 +25,36 @@ final class ProductAction
         $this->productResource = $productResource;
     }
 
+    /**
+     * Fetch list of products
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     *
+     * @return Response
+     */
     public function fetch(Request $request, Response $response, array $args) : response
     {
         $photos = $this->productResource->get();
         return $response->withJSON($photos);
     }
 
+    /**
+     * Fetch single product
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     *
+     * @return Response
+     */
     public function fetchOne(Request $request, Response $response, array $args) : Response
     {
         $photo = $this->productResource->get($args['slug']);
         if ($photo) {
             return $response->withJSON($photo);
         }
-        return $response->withStatus(404, 'No photo found with that slug.');
+        return $response->withJson(['status' => 1, 'message' => 'product not found'], 404);
     }
 }

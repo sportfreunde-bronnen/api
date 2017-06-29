@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
 
-abstract class Base
+namespace App;
+
+abstract class AbstractEntity
 {
     /**
      * Get array copy of object

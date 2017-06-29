@@ -4,10 +4,10 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 require 'vendor/autoload.php';
 
-$settings = include 'src/settings.php';
+$settings = include 'app/settings.php';
 
-if (file_exists('src/local.settings.php')) {
-    $localSettings = require 'src/local.settings.php';
+if (file_exists('app/local.settings.php')) {
+    $localSettings = require 'app/local.settings.php';
     $settings = \Zend\Stdlib\ArrayUtils::merge($settings, $localSettings);
 }
 

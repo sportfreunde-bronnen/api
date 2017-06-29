@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\AbstractEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="customer")
  */
-class Customer extends Base
+class Customer extends AbstractEntity
 {
     /**
      * @ORM\Id

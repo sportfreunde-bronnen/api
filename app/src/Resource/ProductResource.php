@@ -19,8 +19,10 @@ class ProductResource extends AbstractResource
 
         $this->getLogger()->info("Slim-Skeleton '/' route " . $id );
 
+        sleep(1);
+
         if ($id === null) {
-            $products = $this->entityManager->getRepository('App\Entity\Product')->findAll();
+            $products = $this->entityManager->getRepository('App\Entity\Product')->findBy([], ['sort' => 'ASC']);
             $products = array_map(
                 function ($product) {
                     return $product->getArrayCopy();
