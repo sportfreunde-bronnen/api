@@ -24,3 +24,12 @@ $app->get('/cart/itemcount/{key:[0-9a-z]{32}}', 'App\Action\CartAction:getItemCo
 
 // Delete product from cart
 $app->delete('/cart/item/{key:[0-9a-z]{32}}/{itemId}', 'App\Action\CartAction:deleteItem');
+
+$app->add(function ($req, $res, $next) {
+    $response = $next($req, $res);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://dev.sfbshop')
+        ->withHeader('Access-Control-Allow-Origin', 'http://shop.sf-bronnen.de')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
