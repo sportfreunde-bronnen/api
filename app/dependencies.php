@@ -18,7 +18,10 @@ $container['em'] = function ($c) {
 
 // ProductAction
 $container['App\Action\ProductAction'] = function ($c) {
-    $productResource = new \App\Resource\ProductResource($c->get('em'), $c->get('logger'));
+    $productResource = new \App\Resource\ProductResource(
+        $c->get('em'),
+        $c->get('logger')
+    );
     return new \App\Action\ProductAction($productResource);
 };
 

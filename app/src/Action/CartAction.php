@@ -54,6 +54,26 @@ class CartAction
     }
 
     /**
+     * Returns the amount of items in cart
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     *
+     * @return Response
+     */
+    public function getItemCount(Request $request, Response $response, array $args) : Response
+    {
+        $key = $args['key'];
+        $cart = $this->getCartResource()->fetchOne($key);
+        $items = 0;
+        foreach ($cart->getItems() as $item) {
+            $items += $item->getAmount();
+        }
+        return $response->withJson(['amount' => $items]);
+    }
+
+    /**
      * Adds a product to the cart
      *
      * @param Request  $request

@@ -18,3 +18,6 @@ $app->post('/cart/{key:[0-9a-z]{32}}', 'App\Action\CartAction:addProduct');
 
 // Read cart
 $app->get('/cart/{key:[0-9a-z]{32}}', 'App\Action\CartAction:fetch');
+
+// Read carts item count
+$app->get('/cart/itemcount/{key:[0-9a-z]{32}}', 'App\Action\CartAction:getItemCount');
