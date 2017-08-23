@@ -69,6 +69,12 @@ class Product extends AbstractEntity
     protected $variants;
 
     /**
+     * @ORM\Column(name="category", type="integer")
+     * @var int
+     */
+    protected $category;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -194,6 +200,22 @@ class Product extends AbstractEntity
     public function setVariants(Collection $variants)
     {
         $this->variants = $variants;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCategory(): int
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param int $category
+     */
+    public function setCategory(int $category)
+    {
+        $this->category = $category;
     }
 
     /**

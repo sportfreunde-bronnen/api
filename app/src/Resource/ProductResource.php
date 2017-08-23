@@ -14,13 +14,21 @@ class ProductResource extends AbstractResource
      *
      * @return array|boolean
      */
-    public function get($id = null)
+    public function get($queryParams = array(), $id = null)
     {
 
         $this->getLogger()->info("Slim-Skeleton '/' route " . $id );
 
         if ($id === null) {
-            $products = $this->entityManager->getRepository('App\Entity\Product')->findBy([], ['sort' => 'ASC']);
+
+            $findBy = [];
+
+            // Check for filters
+            if (!empty($queryParams['category'])) {
+                $findBy = ['category' => $queryParams['category']];
+            }
+
+            $products = $this->entityManager->getRepository('App\Entity\Product')->findBy($findBy, ['sort' => 'ASC']);
             $products = array_map(
                 function ($product) {
                     return $product->getArrayCopy();

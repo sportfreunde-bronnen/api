@@ -36,8 +36,9 @@ final class ProductAction
      */
     public function fetch(Request $request, Response $response, array $args) : response
     {
-        $photos = $this->productResource->get();
-        return $response->withJSON($photos);
+        $queryParams = $request->getQueryParams();
+        $products = $this->productResource->get($queryParams);
+        return $response->withJSON($products);
     }
 
     /**
