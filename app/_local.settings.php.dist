@@ -1,0 +1,15 @@
+<?php
+return [
+    'settings' => [
+        'doctrine' => [
+            'connection' => [
+                'driver'    => 'pdo_mysql',
+                'host'      => '',
+                'dbname'    => '',
+                'user'      => '',
+                'password'  => '',
+                'charset'   => 'UTF8'
+            ]
+        ]
+    ]
+];
