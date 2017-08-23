@@ -46,6 +46,15 @@ class CartAction
         return $response->withJson($newCart->getArrayCopy());
     }
 
+    /**
+     * Fetch cart
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     *
+     * @return Response
+     */
     public function fetch(Request $request, Response $response, array $args) : Response
     {
         $key = $args['key'];
@@ -82,11 +91,27 @@ class CartAction
      *
      * @return Response
      */
-    public function addProduct(Request $request, Response $response, array $args) : response
+    public function addProduct(Request $request, Response $response, array $args) : Response
     {
         $data = $request->getParsedBody();
         $newItem = $this->getCartResource()->addProductToCart($args['key'], $data);
         return $response->withJson($newItem->getArrayCopy());
+    }
+
+    /**
+     * Delete item from cart
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     *
+     * @return static
+     */
+    public function deleteItem(Request $request, Response $response, array $args)
+    {
+        $data = $request->getParsedBody();
+        $this->getCartResource()->deleteItem($args);
+        return $response->withJson(['status' => 0]);
     }
 
     /**

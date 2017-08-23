@@ -21,3 +21,6 @@ $app->get('/cart/{key:[0-9a-z]{32}}', 'App\Action\CartAction:fetch');
 
 // Read carts item count
 $app->get('/cart/itemcount/{key:[0-9a-z]{32}}', 'App\Action\CartAction:getItemCount');
+
+// Delete product from cart
+$app->delete('/cart/item/{key:[0-9a-z]{32}}/{itemId}', 'App\Action\CartAction:deleteItem');

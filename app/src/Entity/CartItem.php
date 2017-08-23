@@ -42,7 +42,7 @@ class CartItem extends AbstractEntity
     protected $product;
 
     /**
-     * @ORM\OneToOne(targetEntity="ProductVariant")
+     * @ORM\ManyToOne(targetEntity="ProductVariant")
      * @ORM\JoinColumn=(name="product_variant_id", referencedColumnName="id")
      *
      * @var ProductVariant

@@ -11,6 +11,8 @@ use App\Entity\CartItem;
 use App\Service\CartKeyGenerator;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
+use Throwable;
+use Zend\Stdlib\Exception\InvalidArgumentException;
 
 /**
  * Cart resource
@@ -60,6 +62,47 @@ class CartResource extends AbstractResource
     }
 
     /**
+     * Delete product from cart
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function deleteItem(array $data) : bool
+    {
+        try {
+
+            $cartKey = $data['key'];
+
+            // Get cart
+            $cart = $this->fetchOne($cartKey);
+
+            if (!$cart) {
+                throw new InvalidArgumentException('No valid cart');
+            }
+
+            $cart->getItems()->filter(
+                function(CartItem $item) use ($data) {
+                    return ($item->getId() === (int)$data['itemId']);
+                }
+            )->map(
+                function(CartItem $cartItem) {
+                    $this->getEntityManager()->remove($cartItem);
+                }
+            );
+
+            // Delete objects in db
+            $this->getEntityManager()->flush();
+
+            return true;
+
+        } catch(Throwable $e) {
+            return false;
+        }
+    }
+
+
+    /**
      * Adds a product to the given cart
      *
      * @param string $cartKey
@@ -71,22 +114,55 @@ class CartResource extends AbstractResource
     {
         $em = $this->getEntityManager();
 
-        $cartItem = new CartItem();
-        $cartItem->setCart(
-            $this->getCartByKey($cartKey)
-        );
-        $cartItem->setAmount($data['amount']);
-        $cartItem->setProduct($em->getReference('App\Entity\Product', $data['productId']));
-        $cartItem->setPrice((float)$data['price']);
+        // First, check if this products already exists in the cart
+        $cart = $this->fetchOne($cartKey);
 
-        if (!empty($data['variant'])) {
-            $cartItem->setVariant($em->getReference('App\Entity\ProductVariant', $data['variant']));
+        $existingItem = $cart->getItems()->filter(
+            function (CartItem $item) use ($data) {
+                if ($item->getProduct()->getId() === (int)$data['productId']) {
+                    if (is_null($data['variant'])) {
+                        return true;
+                    }
+                    return ($item->getVariant()->getId() == $data['variant']['id']);
+                }
+                return false;
+            }
+        );
+
+        if ($existingItem->count() > 0) {
+
+            $existingItem->map(
+                function (CartItem $item) use ($data, $em) {
+                    $currentAmount = $item->getAmount();
+                    $currentAmount += (int)$data['amount'];
+                    $item->setAmount($currentAmount);
+                    $em->flush($item);
+                }
+            );
+
+            return $existingItem->first();
+
+        } else {
+
+            $cartItem = new CartItem();
+            $cartItem->setCart(
+                $this->getCartByKey($cartKey)
+            );
+            $cartItem->setAmount($data['amount']);
+            $cartItem->setProduct($em->getReference('App\Entity\Product', $data['productId']));
+            $cartItem->setPrice((float)$data['price']);
+
+            if (!empty($data['variant'])) {
+                $cartItem->setVariant($em->getReference('App\Entity\ProductVariant', $data['variant']));
+            }
+
+            $em->persist($cartItem);
+            $em->flush();
+
+            return $cartItem;
+
         }
 
-        $em->persist($cartItem);
-        $em->flush();
-
-        return $cartItem;
     }
 
     private function getCartByKey(string $key) : Cart
