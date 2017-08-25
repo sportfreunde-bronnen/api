@@ -127,7 +127,7 @@ class CartResource extends AbstractResource
         $eixistingItemCount = 0;
         $existingItem = null;
 
-        if ($cart->getItems()->count() > 0) {
+        if ($cart->getItems() !== null) {
             $existingItem = $cart->getItems()->filter(
                 function (CartItem $item) use ($data) {
                     if ($item->getProduct()->getId() === (int)$data['productId']) {
