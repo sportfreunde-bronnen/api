@@ -8,6 +8,7 @@ use App\AbstractResource;
 use App\Entity\Cart as CartEntity;
 use App\Entity\Cart;
 use App\Entity\CartItem;
+use App\Entity\Customer;
 use App\Service\CartKeyGenerator;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
@@ -42,12 +43,18 @@ class CartResource extends AbstractResource
      *
      * @return CartEntity
      */
-    public function create() : CartEntity
+    public function create(string $cartKey = null) : CartEntity
     {
         $cartEntity = new CartEntity();
-        $cartEntity->setKey(
-            $this->getKeyCreator()->create()
-        );
+
+        if (!is_null($cartKey)) {
+            $cartEntity->setKey($cartKey);
+        } else {
+            $cartEntity->setKey(
+                $this->getKeyCreator()->create()
+            );
+        }
+
         $this->getEntityManager()->persist($cartEntity);
         $this->getEntityManager()->flush();
         return $cartEntity;
@@ -58,7 +65,11 @@ class CartResource extends AbstractResource
      */
     public function fetchOne(string $key) : Cart
     {
-        return $this->getCartByKey($key);
+        $cart = $this->getCartByKey($key);
+
+        if (!$cart instanceof Cart) {
+            return $this->create($key);
+        }
     }
 
     /**
@@ -161,6 +172,60 @@ class CartResource extends AbstractResource
 
             return $cartItem;
 
+        }
+
+    }
+
+    public function checkout(string $cartKey, array $params)
+    {
+        try {
+
+            // First, create customer
+            $customer = new Customer();
+
+            // Data
+            $customer->setFirstName($params['firstname']);
+            $customer->setLastName($params['lastname']);
+            $customer->setStreet($params['street']);
+            $customer->setZipcode($params['zipcode']);
+            $customer->setCity($params['city']);
+            $customer->setEmail($params['email']);
+            $customer->setPhone($params['phone']);
+
+            // Delivery address?
+            if ((bool)$params['variantDelivery']) {
+                $customer->setDeliveryFirstName($params['delivery']['firstname']);
+                $customer->setDeliveryLastName($params['delivery']['lastname']);
+                $customer->setDeliveryStreet($params['delivery']['street']);
+                $customer->setDeliveryZipcode($params['delivery']['zipcode']);
+                $customer->setDeliveryCity($params['delivery']['city']);
+            }
+
+            // Try to get cart
+            $cart = $this->fetchOne($cartKey);
+
+            if (1 === $cart->getStatus()) {
+                throw new \Exception(sprintf('The cart %s is already checked out!', $cart->getKey()));
+            }
+
+            $cart->setCustomer($customer);
+            $cart->setStatus(1);
+
+            $entityManager = $this->getEntityManager();
+
+            $entityManager->persist($customer);
+            $entityManager->persist($cart);
+
+            $entityManager->flush();
+
+            return true;
+
+        } catch (\Throwable $error) {
+            $this->getLogger()->addError($error->getMessage());
+            $this->getLogger()->addError($error->getFile());
+            $this->getLogger()->addError($error->getLine());
+            $this->getLogger()->addError($error->getTraceAsString());
+            return false;
         }
 
     }

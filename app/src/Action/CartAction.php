@@ -114,6 +114,21 @@ class CartAction
         return $response->withJson(['status' => 0]);
     }
 
+    public function checkout(Request $request, Response $response, array $args)
+    {
+        if ($this->getCartResource()->checkout($args['key'], $request->getParsedBody())) {
+            return $response->withJson([
+                'status' => 0,
+                'newCartKey' => $this->getCartResource()->getKeyCreator()->create()
+            ]);
+        } else {
+            return $response->withJson([
+                'status' => 1,
+                'message' => 'Es ist ein Fehler aufgetreten'
+            ]);
+        }
+    }
+
     /**
      * @return CartResource
      */

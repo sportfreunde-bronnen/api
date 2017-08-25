@@ -46,6 +46,14 @@ class Cart extends AbstractEntity
     protected $items;
 
     /**
+     * @ORM\OneToOne(targetEntity="Customer")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     *
+     * @var Customer
+     */
+    protected $customer;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -107,6 +115,22 @@ class Cart extends AbstractEntity
     public function setItems(Collection $items)
     {
         $this->items = $items;
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getCustomer(): Customer
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @param Customer $customer
+     */
+    public function setCustomer(Customer $customer)
+    {
+        $this->customer = $customer;
     }
 
     public function getArrayCopy(): array

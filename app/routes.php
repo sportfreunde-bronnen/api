@@ -25,6 +25,8 @@ $app->get('/cart/itemcount/{key:[0-9a-z]{32}}', 'App\Action\CartAction:getItemCo
 // Delete product from cart
 $app->delete('/cart/item/{key:[0-9a-z]{32}}/{itemId}', 'App\Action\CartAction:deleteItem');
 
+$app->post('/cart/checkout/{key:[0-9a-z]{32}}', 'App\Action\CartAction:checkout');
+
 $app->add(function ($req, $res, $next) {
     $response = $next($req, $res);
     return $response
