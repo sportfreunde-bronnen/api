@@ -124,19 +124,25 @@ class CartResource extends AbstractResource
         // First, check if this products already exists in the cart
         $cart = $this->fetchOne($cartKey);
 
-        $existingItem = $cart->getItems()->filter(
-            function (CartItem $item) use ($data) {
-                if ($item->getProduct()->getId() === (int)$data['productId']) {
-                    if (is_null($data['variant'])) {
-                        return true;
-                    }
-                    return ($item->getVariant()->getId() == $data['variant']['id']);
-                }
-                return false;
-            }
-        );
+        $eixistingItemCount = 0;
+        $existingItem = null;
 
-        if ($existingItem->count() > 0) {
+        if ($cart->getItems()->count() > 0) {
+            $existingItem = $cart->getItems()->filter(
+                function (CartItem $item) use ($data) {
+                    if ($item->getProduct()->getId() === (int)$data['productId']) {
+                        if (is_null($data['variant'])) {
+                            return true;
+                        }
+                        return ($item->getVariant()->getId() == $data['variant']['id']);
+                    }
+                    return false;
+                }
+            );
+            $eixistingItemCount = $existingItem->count();
+        }
+
+        if ($eixistingItemCount > 0) {
 
             $existingItem->map(
                 function (CartItem $item) use ($data, $em) {
