@@ -65,11 +65,7 @@ class CartResource extends AbstractResource
      */
     public function fetchOne(string $key) : Cart
     {
-        $cart = $this->getCartByKey($key);
-
-        if (!$cart instanceof Cart) {
-            return $this->create($key);
-        }
+        return $this->getCartByKey($key);
     }
 
     /**
@@ -236,6 +232,11 @@ class CartResource extends AbstractResource
         $cart = $this->getEntityManager()
             ->getRepository('App\Entity\Cart')
             ->findOneBy(['key' => $key]);
+
+        if (!$cart instanceof Cart) {
+            return $this->create($key);
+        }
+
         return $cart;
     }
 
