@@ -193,6 +193,7 @@ class CartResource extends AbstractResource
             $customer->setCity($params['city']);
             $customer->setEmail($params['email']);
             $customer->setPhone($params['phone']);
+            $customer->setIban($params['iban']);
 
             // Delivery address?
             if ((bool)$params['variantDelivery']) {

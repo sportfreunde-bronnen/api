@@ -92,6 +92,12 @@ class Customer extends AbstractEntity
     protected $deliveryCity;
 
     /**
+     * @ORM\Column(name="iban", type="string", length=50, nullable=true)
+     * @var string
+     */
+    protected $iban;
+
+    /**
      * @return integer
      */
     public function getId()
@@ -297,5 +303,21 @@ class Customer extends AbstractEntity
     public function setPhone($phone)
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIban()
+    {
+        return $this->iban;
+    }
+
+    /**
+     * @param mixed $iban
+     */
+    public function setIban($iban)
+    {
+        $this->iban = $iban;
     }
 }
