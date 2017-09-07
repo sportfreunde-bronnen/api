@@ -1,7 +1,7 @@
 <?php
 
 $app->get('/', function ($request, $response, $args) {
-    $response->getBody()->write(json_encode([]));
+    return $response->withJson([]);
 });
 
 // Product list

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Action;
 
 use App\Resource\CartResource;
+use App\Service\EMailService;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

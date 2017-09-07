@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Entity;
 
 use App\AbstractEntity;
@@ -131,6 +129,20 @@ class Cart extends AbstractEntity
     public function setCustomer(Customer $customer)
     {
         $this->customer = $customer;
+    }
+
+    /**
+     * Calculates the total amount of the cart
+     *
+     * @return float
+     */
+    public function getTotalAmount() : float
+    {
+        $amount = 6; # shipping costs
+        foreach ($this->getItems() as $item) {
+            $amount += ($item->getAmount() * $item->getPrice());
+        }
+        return $amount;
     }
 
     public function getArrayCopy(): array

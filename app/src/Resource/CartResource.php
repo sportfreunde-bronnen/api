@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Resource;
 
 use App\AbstractResource;
-use App\Entity\Cart as CartEntity;
 use App\Entity\Cart;
+use App\Entity\Cart as CartEntity;
 use App\Entity\CartItem;
 use App\Entity\Customer;
 use App\Service\CartKeyGenerator;
+use App\Service\EMailService;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use Throwable;
@@ -28,13 +29,23 @@ class CartResource extends AbstractResource
     protected $keyCreator;
 
     /**
+     * @var EMailService
+     */
+    protected $emailService;
+
+    /**
      * CartResource constructor.
      *
      * @param CartKeyGenerator $keyGenerator
      */
-    public function __construct(EntityManager $entityManager, Logger $logger, CartKeyGenerator $keyGenerator)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        Logger $logger,
+        CartKeyGenerator $keyGenerator,
+        EMailService $emailService
+    ) {
         $this->setKeyCreator($keyGenerator);
+        $this->setEmailService($emailService);
         parent::__construct($entityManager, $logger);
     }
 
@@ -43,7 +54,7 @@ class CartResource extends AbstractResource
      *
      * @return CartEntity
      */
-    public function create(string $cartKey = null) : CartEntity
+    public function create(string $cartKey = null): CartEntity
     {
         $cartEntity = new CartEntity();
 
@@ -63,7 +74,7 @@ class CartResource extends AbstractResource
     /**
      * @return Cart
      */
-    public function fetchOne(string $key) : Cart
+    public function fetchOne(string $key): Cart
     {
         return $this->getCartByKey($key);
     }
@@ -75,7 +86,7 @@ class CartResource extends AbstractResource
      *
      * @return bool
      */
-    public function deleteItem(array $data) : bool
+    public function deleteItem(array $data): bool
     {
         try {
 
@@ -89,11 +100,11 @@ class CartResource extends AbstractResource
             }
 
             $cart->getItems()->filter(
-                function(CartItem $item) use ($data) {
+                function (CartItem $item) use ($data) {
                     return ($item->getId() === (int)$data['itemId']);
                 }
             )->map(
-                function(CartItem $cartItem) {
+                function (CartItem $cartItem) {
                     $this->getEntityManager()->remove($cartItem);
                 }
             );
@@ -103,7 +114,7 @@ class CartResource extends AbstractResource
 
             return true;
 
-        } catch(Throwable $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -113,12 +124,14 @@ class CartResource extends AbstractResource
      * Adds a product to the given cart
      *
      * @param string $cartKey
-     * @param array $data
+     * @param array  $data
      *
      * @return CartItem
      */
-    public function addProductToCart(string $cartKey, array $data = []) : CartItem
-    {
+    public function addProductToCart(
+        string $cartKey,
+        array $data = []
+    ): CartItem {
         $em = $this->getEntityManager();
 
         // First, check if this products already exists in the cart
@@ -130,11 +143,13 @@ class CartResource extends AbstractResource
         if ($cart->getItems() !== null) {
             $existingItem = $cart->getItems()->filter(
                 function (CartItem $item) use ($data) {
-                    if ($item->getProduct()->getId() === (int)$data['productId']) {
+                    if ($item->getProduct()->getId()
+                        === (int)$data['productId']) {
                         if (is_null($data['variant'])) {
                             return true;
                         }
-                        return ($item->getVariant()->getId() == $data['variant']['id']);
+                        return ($item->getVariant()->getId()
+                            == $data['variant']['id']);
                     }
                     return false;
                 }
@@ -162,11 +177,13 @@ class CartResource extends AbstractResource
                 $this->getCartByKey($cartKey)
             );
             $cartItem->setAmount($data['amount']);
-            $cartItem->setProduct($em->getReference('App\Entity\Product', $data['productId']));
+            $cartItem->setProduct($em->getReference('App\Entity\Product',
+                $data['productId']));
             $cartItem->setPrice((float)$data['price']);
 
             if (!empty($data['variant'])) {
-                $cartItem->setVariant($em->getReference('App\Entity\ProductVariant', $data['variant']));
+                $cartItem->setVariant($em->getReference('App\Entity\ProductVariant',
+                    $data['variant']));
             }
 
             $em->persist($cartItem);
@@ -208,11 +225,16 @@ class CartResource extends AbstractResource
             $cart = $this->fetchOne($cartKey);
 
             if (1 === $cart->getStatus()) {
-                throw new \Exception(sprintf('The cart %s is already checked out!', $cart->getKey()));
+                throw new \Exception(sprintf('The cart %s is already checked out!',
+                    $cart->getKey()));
             }
 
             $cart->setCustomer($customer);
             $cart->setStatus(1);
+
+            if (!$this->getEmailService()->sendCheckoutMail($cart)) {
+                $this->getLogger()->addError('Mail wurde nicht versendet! ' . $cart->getId());
+            }
 
             $entityManager = $this->getEntityManager();
 
@@ -233,7 +255,7 @@ class CartResource extends AbstractResource
 
     }
 
-    private function getCartByKey(string $key) : Cart
+    private function getCartByKey(string $key): Cart
     {
         /** @var Cart $cart */
         $cart = $this->getEntityManager()
@@ -261,5 +283,21 @@ class CartResource extends AbstractResource
     public function setKeyCreator(CartKeyGenerator $keyCreator)
     {
         $this->keyCreator = $keyCreator;
+    }
+
+    /**
+     * @return EMailService
+     */
+    public function getEmailService(): EMailService
+    {
+        return $this->emailService;
+    }
+
+    /**
+     * @param EMailService $emailService
+     */
+    public function setEmailService(EMailService $emailService)
+    {
+        $this->emailService = $emailService;
     }
 }

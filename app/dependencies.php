@@ -30,7 +30,11 @@ $container['App\Action\CartAction'] = function($c) {
     $cartResource = new \App\Resource\CartResource(
         $c->get('em'),
         $c->get('logger'),
-        new \App\Service\CartKeyGenerator()
+        new \App\Service\CartKeyGenerator(),
+        new \App\Service\EMailService(
+            $c->get('view'),
+            $c->get('settings')['email']
+        )
     );
     return new \App\Action\CartAction(
         $cartResource
@@ -44,4 +48,15 @@ $container['logger'] = function ($c) {
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
+};
+
+// Register component on container
+$container['view'] = function ($container) {
+    $view = new \Slim\Views\Twig('../app/templates', [
+        'cache' => false
+    ]);
+    // Instantiate and add Slim specific extension
+    $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
+    $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
+    return $view;
 };
