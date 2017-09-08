@@ -58,6 +58,7 @@ class EMailService
 
             $this->phpMailer->addReplyTo('shop@sf-bronnen.de');
             $this->phpMailer->addAddress($cart->getCustomer()->getEmail());
+            $this->phpMailer->addBCC('MagnusBuk@gmx.de');
             $this->phpMailer->Body = $body;
 
             $this->phpMailer->send();
