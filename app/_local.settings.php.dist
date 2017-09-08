@@ -10,6 +10,12 @@ return [
                 'password'  => '',
                 'charset'   => 'UTF8'
             ]
+        ],
+        'email' => [
+            'from' => '',
+            'serverOut' => '',
+            'serverIn' => '',
+            'password' => ''
         ]
     ]
 ];
