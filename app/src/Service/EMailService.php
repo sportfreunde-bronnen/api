@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Cart;
+use Monolog\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Views\Twig;
 
@@ -20,12 +21,19 @@ class EMailService
     protected $phpMailer;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * @var Twig
      */
     protected $twig;
 
-    public function __construct(Twig $twig, array $config)
+    public function __construct(Twig $twig, array $config, Logger $logger)
     {
+        $this->logger = $logger;
+
         $this->phpMailer = new PHPMailer(true);
         $this->phpMailer->isHTML(true);
         $this->phpMailer->CharSet = 'UTF-8';
@@ -37,7 +45,7 @@ class EMailService
         $this->phpMailer->Username = $config['from'];
         $this->phpMailer->Password = $config['password'];
         $this->phpMailer->SMTPAuth = true;
-        $this->phpMailer->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $this->phpMailer->SMTPSecure = 'tls';
         $this->phpMailer->Port = 587;
         $this->twig = $twig;
     }
@@ -48,15 +56,18 @@ class EMailService
 
             $body = $this->twig->fetch('checkout-mail.twig', ['cart' => $cart]);
 
+            $this->phpMailer->addReplyTo('shop@sf-bronnen.de');
             $this->phpMailer->addAddress($cart->getCustomer()->getEmail());
-            $this->phpMailer->SMTPDebug = 1;
             $this->phpMailer->Body = $body;
 
             $this->phpMailer->send();
 
+            $this->logger->info('E-Mail versendet (' . $cart->getKey() . ')');
+
             return true;
 
         } catch(\Throwable $e) {
+            $this->logger->info('Fehler bei E-Mail (' . $cart->getKey() . '): ' . $e->getTraceAsString());
             return false;
         }
     }

@@ -33,7 +33,8 @@ $container['App\Action\CartAction'] = function($c) {
         new \App\Service\CartKeyGenerator(),
         new \App\Service\EMailService(
             $c->get('view'),
-            $c->get('settings')['email']
+            $c->get('settings')['email'],
+            $c->get('logger')
         )
     );
     return new \App\Action\CartAction(

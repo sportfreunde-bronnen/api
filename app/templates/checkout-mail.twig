@@ -3,50 +3,68 @@ Hallo {{ cart.getCustomer.getFirstName }},<br/><br/>
 vielen Dank für Deine Bestellung unter https://shop.sf-bronnen.de! Deine Bestellung wird nun exklusiv für Dich produziert
 und im Anschluss an Dich versendet.<br/><br/>
 
-Bitte beachte, dass die aktuelle Lieferzeit aktuell <b>ca. vier Wochen</b> beträgt.<br/><br/>
+Bitte beachte, dass die aktuelle Lieferzeit <b>ca. vier Wochen</b> beträgt.<br/><br/>
+
+<hr/>
 
 Folgende Artikel hast Du bestellt:<br/><br/>
 
-<table style="width: 100%;">
+<table style="width: 100%;" border="1">
     <thead>
     <tr>
-        <th style="text-align: left;">Position</th>
-        <th style="text-align: left;">Anzahl</th>
-        <th style="text-align: left;">Artikel</th>
-        <th style="text-align: left;">Einzelpreis</th>
-        <th style="text-align: left;">Gesamtpreis</th>
+        <th style="text-align: center;">Position</th>
+        <th style="text-align: center;">Anzahl</th>
+        <th style="text-align: center;">Artikel</th>
+        <th style="text-align: right;">Einzelpreis</th>
+        <th style="text-align: right;">Gesamtpreis</th>
     </tr>
     </thead>
     <tbody>
     {% for item in cart.getItems() %}
         <tr>
-            <td style="text-align: left;">{{ loop.index }}</td>
-            <td style="text-align: left;">{{ item.getAmount }}x</td>
-            <td style="text-align: left;">{{ item.getProduct.getName }}</td>
-            <td style="text-align: left;">{{ item.getPrice|number_format(2, ',', '.') }}€</td>
-            <td style="text-align: left;">{{ (item.getAmount * item.getPrice)|number_format(2, ',', '.') }}€</td>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center;">{{ item.getAmount }}x</td>
+            <td style="text-align: center;">{{ item.getProduct.getName }}</td>
+            <td style="text-align: right;">{{ item.getPrice|number_format(2, ',', '.') }} €</td>
+            <td style="text-align: right;">{{ (item.getAmount * item.getPrice)|number_format(2, ',', '.') }} €</td>
         </tr>
     {% endfor %}
         <tr>
             <td>&nbsp;</td>
-            <td style="text-align: left;">1x</td>
-            <td style="text-align: left;">Versandkostenpauschale</td>
-            <td style="text-align: left;">{{ 6|number_format(2, ',', '.') }}€</td>
-            <td style="text-align: left;">{{ 6|number_format(2, ',', '.') }}€</td>
+            <td style="text-align: center;">1x</td>
+            <td style="text-align: center;">Versandkostenpauschale</td>
+            <td style="text-align: right;">{{ 6|number_format(2, ',', '.') }} €</td>
+            <td style="text-align: right;">{{ 6|number_format(2, ',', '.') }} €</td>
         </tr>
     <tr>
         <td colspan="4" style="text-align: right;"><b>Gesamtsumme:</b></td>
-        <td style="text-align: left;"><b>{{ cart.getTotalAmount|number_format(2, ',', '.') }}</b></td>
+        <td style="text-align: right;"><b>{{ cart.getTotalAmount|number_format(2, ',', '.') }} €</b></td>
     </tr>
     </tbody>
 </table>
 
-<br/>
+<hr/>
+
+<br/>Die Lieferung erfolgt an folgende Adresse:<br/><br/>
+
+{% if cart.getCustomer.hasDeliveryAddress %}
+    {{ cart.getCustomer.getDeliveryFullName }}<br/>
+    {{ cart.getCustomer.getDeliveryStreet }}<br/>
+    {{ cart.getCustomer.getDeliveryZipcode }} {{ cart.getCustomer.getDeliveryCity }}
+{% else %}
+    {{ cart.getCustomer.getFullName }}<br/>
+    {{ cart.getCustomer.getStreet }}<br/>
+    {{ cart.getCustomer.getZipcode }} {{ cart.getCustomer.getCity }}
+{% endif %}<br/><br/>
 
 Bei Fragen zur Bestellung wende Dich gerne per E-Mail an <b>shop@sf-bronnen.de</b>.<br/><br/>
 
-Deine Sportfreunde
+Deine Sportfreunde<br/>
 
 <hr/>
 
 - Diese E-Mail wurde automatisch erstellt. Bitte antworte nicht darauf. -
+
+<br/><br/>
+
+<small>Bestellnummer: {{ cart.getKey }}</small>

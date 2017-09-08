@@ -146,6 +146,18 @@ class Customer extends AbstractEntity
     }
 
     /**
+     * Returns the customers full name
+     */
+    public function getFullName()
+    {
+        return sprintf(
+            '%s %s',
+            $this->getFirstName(),
+            $this->getLastName()
+        );
+    }
+
+    /**
      * @return string
      */
     public function getStreet()
@@ -226,6 +238,18 @@ class Customer extends AbstractEntity
     }
 
     /**
+     * Returns the customers full name
+     */
+    public function getDeliveryFullName()
+    {
+        return sprintf(
+            '%s %s',
+            $this->getDeliveryFirstName(),
+            $this->getDeliveryLastName()
+        );
+    }
+
+    /**
      * @return string
      */
     public function getDeliveryStreet()
@@ -271,6 +295,17 @@ class Customer extends AbstractEntity
     public function setDeliveryCity($deliveryCity)
     {
         $this->deliveryCity = $deliveryCity;
+    }
+
+    /**
+     * Check for delivery address
+     *
+     * @return bool
+     */
+    public function hasDeliveryAddress()
+    {
+        $deliveryFirstName = $this->getDeliveryFirstName();
+        return !empty($deliveryFirstName);
     }
 
     /**
