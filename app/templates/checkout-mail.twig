@@ -24,7 +24,7 @@ Folgende Artikel hast Du bestellt:<br/><br/>
         <tr>
             <td style="text-align: center;">{{ loop.index }}</td>
             <td style="text-align: center;">{{ item.getAmount }}x</td>
-            <td style="text-align: center;">{{ item.getProduct.getName }}</td>
+            <td style="text-align: center;">{{ item.getItemName }}</td>
             <td style="text-align: right;">{{ item.getPrice|number_format(2, ',', '.') }} €</td>
             <td style="text-align: right;">{{ (item.getAmount * item.getPrice)|number_format(2, ',', '.') }} €</td>
         </tr>

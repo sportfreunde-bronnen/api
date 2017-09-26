@@ -157,6 +157,23 @@ class CartItem extends AbstractEntity
         $this->variant = $variant;
     }
 
+    /**
+     * Return item name (product name + variant name)
+     *
+     * @return string
+     */
+    public function getItemName()
+    {
+        if ($this->getVariant() instanceof ProductVariant) {
+            return sprintf(
+                '%s (Größe %s)',
+                $this->getProduct()->getName(),
+                $this->getVariant()->getName()
+            );
+        }
+        return sprintf('%s', $this->getProduct()->getName());
+    }
+
     public function getArrayCopy(): array
     {
         $cartItem = parent::getArrayCopy();
