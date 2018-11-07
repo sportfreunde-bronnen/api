@@ -3,3 +3,4 @@ local.*
 .idea/
 logs/
 cache/*
+npm-debug.log

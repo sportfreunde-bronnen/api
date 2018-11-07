@@ -23,6 +23,14 @@ return [
                 'proxy_dir' =>  __DIR__.'/../cache/proxies',
                 'cache' => null,
             ]
+        ],
+        'fupa' => [
+            'urls' => [
+                'schedule' => [
+                    'erste' => 'https://services.sf-bronnen.de/erste.json',
+                    'zweite' => 'https://services.sf-bronnen.de/zweite.json'
+                ]
+            ]
         ]
     ]
 ];

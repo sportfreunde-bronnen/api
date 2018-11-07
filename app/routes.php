@@ -27,6 +27,11 @@ $app->delete('/cart/item/{key:[0-9a-z]{32}}/{itemId}', 'App\Action\CartAction:de
 
 $app->post('/cart/checkout/{key:[0-9a-z]{32}}', 'App\Action\CartAction:checkout');
 
+// Football routes
+$app->get('/football/schedule/{team}[/]', 'App\Action\FootballAction:schedule');
+
+$app->get('/football/schedule/{team}/{type}', 'App\Action\FootballAction:schedule');
+
 $app->add(function ($req, $res, $next) {
     $response = $next($req, $res);
     return $response

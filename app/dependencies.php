@@ -42,6 +42,17 @@ $container['App\Action\CartAction'] = function($c) {
     );
 };
 
+$container['App\Action\FootballAction'] = function ($c) {
+  $footballResource = new \App\Resource\FootballResource(
+      $c->get('em'),
+      $c->get('logger'),
+      $c->get('settings')['fupa']
+  );
+  return new \App\Action\FootballAction(
+      $footballResource
+  );
+};
+
 // Logger
 $container['logger'] = function ($c) {
     $settings = $c->get('settings')['logger'];
