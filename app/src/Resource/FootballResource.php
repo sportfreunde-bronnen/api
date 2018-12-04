@@ -61,6 +61,7 @@ class FootballResource extends AbstractResource
 
 
         } catch (\Throwable $t) {
+            var_dump($t);
             return['status' => 2, 'message' => 'error occured'];
         }
     }
@@ -77,6 +78,13 @@ class FootballResource extends AbstractResource
         $response = [];
 
         foreach ($data['results'] as $competition => $games) {
+
+            usort($games, function($gameA, $gameB) {
+                $v1 = strtotime($gameA['date']);
+                $v2 = strtotime($gameB['date']);
+                return $v1 - $v2;
+            });
+
             foreach ($games as $gameIndex => $game) {
                 $gameDate = \DateTime::createFromFormat('Y-m-d H:i', $game['date'] . ' ' . $game['time']);
                 if ($gameDate > new \DateTime()) {
