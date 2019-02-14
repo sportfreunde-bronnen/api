@@ -76,24 +76,31 @@ class FootballResource extends AbstractResource
     private function filterAlexa($data)
     {
         $response = [];
+        $tempGames = [];
 
         foreach ($data['results'] as $competition => $games) {
 
-            usort($games, function($gameA, $gameB) {
-                $v1 = strtotime($gameA['date']);
-                $v2 = strtotime($gameB['date']);
-                return $v1 - $v2;
-            });
+            foreach ($games as $key => $game) {
+                $game['type'] = $competition;
+                $tempGames[] = $game;
+            }
 
-            foreach ($games as $gameIndex => $game) {
-                $gameDate = \DateTime::createFromFormat('Y-m-d H:i', $game['date'] . ' ' . $game['time']);
-                if ($gameDate > new \DateTime()) {
-                    $response['latest'] = $games[$gameIndex - 1];
-                    $response['latest']['competition'] = $competition;
-                    $response['next'] = $game;
-                    $response['next']['competition'] = $competition;
-                    break;
-                }
+        }
+
+        usort($tempGames, function($gameA, $gameB) {
+            $v1 = strtotime($gameA['date']);
+            $v2 = strtotime($gameB['date']);
+            return $v1 - $v2;
+        });
+
+        foreach ($tempGames as $gameIndex => $game) {
+            $gameDate = \DateTime::createFromFormat('Y-m-d H:i', $game['date'] . ' ' . $game['time']);
+            if ($gameDate > new \DateTime()) {
+                $response['latest'] = $tempGames[$gameIndex - 1];
+                $response['latest']['competition'] = $competition;
+                $response['next'] = $game;
+                $response['next']['competition'] = $competition;
+                break;
             }
         }
 
