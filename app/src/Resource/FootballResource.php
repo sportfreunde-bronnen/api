@@ -97,9 +97,9 @@ class FootballResource extends AbstractResource
             $gameDate = \DateTime::createFromFormat('Y-m-d H:i', $game['date'] . ' ' . $game['time']);
             if ($gameDate > new \DateTime()) {
                 $response['latest'] = $tempGames[$gameIndex - 1];
-                $response['latest']['competition'] = $competition;
+                $response['latest']['competition'] = $tempGames[$gameIndex - 1]['type'];
                 $response['next'] = $game;
-                $response['next']['competition'] = $competition;
+                $response['next']['competition'] = $game['type'];
                 break;
             }
         }
